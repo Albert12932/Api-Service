@@ -9,7 +9,7 @@ import (
 )
 
 func CreateConnect() (*gorm.DB, error) {
-
+	
 	// берем переменные для подключения из .env и собираем их в путь (dsn)
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")

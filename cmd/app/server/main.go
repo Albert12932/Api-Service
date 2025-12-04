@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"api-service/internal/api/routes"
@@ -37,7 +37,7 @@ func main() {
 	routes.RegisterRoutes(mux, db)
 
 	// создаем сервер и включаем его внутри горутины.
-	srv := &http.Server{Addr: ":8080"}
+	srv := &http.Server{Addr: ":8080", Handler: mux}
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatal(err)
