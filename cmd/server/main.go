@@ -32,6 +32,10 @@ func main() {
 	sqlDB.SetConnMaxIdleTime(5 * time.Minute)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
+	mux := http.NewServeMux()
+
+	routes.RegisterRoutes(mux, db)
+
 	// создаем сервер и включаем его внутри горутины.
 	srv := &http.Server{Addr: ":8080"}
 	go func() {
