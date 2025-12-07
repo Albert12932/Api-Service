@@ -1,3 +1,9 @@
+// @title           API Service
+// @version         1.0
+// @description     Документация API-сервиса вопросов и ответов.
+
+// @host      localhost:8080
+// @BasePath  /
 package main
 
 import (

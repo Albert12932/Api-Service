@@ -1,4 +1,4 @@
-package controllers
+package questions
 
 import (
 	"api-service/internal/api/services"
@@ -13,7 +13,19 @@ type CreateQuestionRequest struct {
 	Text string `json:"text"`
 }
 
-func CreateQuestionHandler(service *services.CreateQuestionService) http.HandlerFunc {
+// CreateQuestionHandler Создать новый вопрос
+// @Summary      Создать новый вопрос
+// @Description  Создаёт вопрос с указанным текстом
+// @Tags         Questions
+// @Accept       json
+// @Produce      json
+// @Param        request  body      questions.CreateQuestionRequest  true  "Текст вопроса"
+// @Success      201      {object}  map[string]string               "status: ok"
+// @Failure      400      {object}  pkg.ErrorResponse               "Ошибка валидации"
+// @Failure      409      {object}  pkg.ErrorResponse               "Такой вопрос уже существует"
+// @Failure      500      {object}  pkg.ErrorResponse               "Внутренняя ошибка"
+// @Router       /questions [post]
+func CreateQuestionHandler(service *services.QuestionService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 

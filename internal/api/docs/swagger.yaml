@@ -1,0 +1,275 @@
+basePath: /
+definitions:
+  models.Answer:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      question_id:
+        type: integer
+      text:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.CreateAnswerRequest:
+    properties:
+      text:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.Question:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/models.Answer'
+        type: array
+      created_at:
+        type: string
+      id:
+        type: integer
+      text:
+        type: string
+    type: object
+  pkg.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  questions.CreateQuestionRequest:
+    properties:
+      text:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Документация API-сервиса вопросов и ответов.
+  title: API Service
+  version: "1.0"
+paths:
+  /answer/{id}:
+    delete:
+      parameters:
+      - description: ID ответа
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 'status: deleted'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+      summary: Удалить ответ
+      tags:
+      - Answers
+  /answers/{id}:
+    get:
+      parameters:
+      - description: ID ответа
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Answer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+      summary: Получить ответ по ID
+      tags:
+      - Answers
+  /questions:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Question'
+            type: array
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+      summary: Получить список всех вопросов
+      tags:
+      - Questions
+    post:
+      consumes:
+      - application/json
+      description: Создаёт вопрос с указанным текстом
+      parameters:
+      - description: Текст вопроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/questions.CreateQuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'status: ok'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Ошибка валидации
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "409":
+          description: Такой вопрос уже существует
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+      summary: Создать новый вопрос
+      tags:
+      - Questions
+  /questions/{id}:
+    delete:
+      description: Удаляет вопрос и все связанные ответы (ON DELETE CASCADE)
+      parameters:
+      - description: ID вопроса
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 'status: deleted'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+      summary: Удалить вопрос
+      tags:
+      - Questions
+    get:
+      parameters:
+      - description: ID вопроса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Question'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+      summary: Получить вопрос и все ответы
+      tags:
+      - Questions
+  /questions/{id}/answers:
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новый ответ для указанного вопроса
+      parameters:
+      - description: ID вопроса
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Текст ответа и user_id
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateAnswerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'status: ok'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Ошибка валидации
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "404":
+          description: Вопрос не найден
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "409":
+          description: Ответ уже существует
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/pkg.ErrorResponse'
+      summary: Добавить ответ к вопросу
+      tags:
+      - Answers
+swagger: "2.0"
